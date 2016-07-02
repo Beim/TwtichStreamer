@@ -1,3 +1,3 @@
 # TwtichStreamer
 
-[预览](http://codepen.io/Beim/full/NAjrRO/)
+[预览](http://htmlpreview.github.io/?https://github.com/Beim/TwtichStreamer/blob/master/index.html)
