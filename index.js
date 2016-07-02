@@ -11,6 +11,33 @@ let myGet = function (url, callback) {
     xhr.send()
 }
 
+let anim = function (obj, opt, time, callback){
+    if (!obj.timer) {
+        obj.timer = {}
+    }
+    for (let item in opt) {
+        if (obj.timer[item]) {
+            clearInterval(obj.timer[item])
+        }
+        let target = opt[item]
+        let speed = (target - parseInt(obj.style[item])) / (time / 16.7 * 1000)
+        console.log(item, obj.style[item], target, speed)
+        obj.timer[item] = setInterval(function () {
+            if ((speed > 0 && parseInt(obj.style[item]) >= target) || (speed < 0 && parseInt(obj.style[item]) <= target)) {
+                clearInterval(obj.timer[item]);
+            }
+            else {
+                if(speed > 0){
+                    obj.style[item] = Math.ceil(parseInt(obj.style[item]) + speed)
+                }
+                else{
+                    obj.style[item] = Math.floor(parseInt(obj.style[item]) + speed)
+                }
+            }
+        }, 16.7)
+    }
+}
+
 let total = rcc({
     getInitialState: function () {
         return {
@@ -66,10 +93,29 @@ let total = rcc({
         })
     },
     toggle: function (e) {
-        // console.log(e.target)
         let target = e.target
+        console.log(target.style);
         let type = target.attributes['data-myname'].value
         this.setState({display: type})
+    },
+    mouseEnter: function (e) {
+        let target = e.target
+        if (target.attributes['data-myname'].value != this.state.display){
+            while(target.tagName !== 'DIV'){
+                target = target.parentNode
+            }
+            anim(target, {'right': '0'}, 0.5) 
+        }
+
+    },
+    mouseLeave: function (e) {
+        let target = e.target
+        if (target.attributes['data-myname'].value != this.state.display){
+            while(target.tagName !== 'DIV'){
+                target = target.parentNode
+            }
+            anim(target, {'right': '-45'}, 0.5)            
+        }
     },
     render: function () {
         let info = this.state.info
@@ -105,13 +151,13 @@ let total = rcc({
                         rce('h1', null, 'TWITCH STREAMERS')
                     ),
                     rce('div', {'className': 'header-toggle'},
-                        rce('div', {'className': 'toggle', 'onClick': this.toggle, 'data-myname': 'all'},
+                        rce('div', {'className': 'toggle', 'onClick': this.toggle, 'data-myname': 'all', 'style': (display === 'all') ? {'right': '0px'} : {'right': '-45px'}, 'onMouseEnter': this.mouseEnter, 'onMouseLeave': this.mouseLeave},
                             rce('b',{'data-myname': 'all'}, 'All')
                         ),
-                        rce('div', {'className': 'toggle', 'onClick': this.toggle, 'data-myname': 'on'},
+                        rce('div', {'className': 'toggle', 'onClick': this.toggle, 'data-myname': 'on', 'style': (display === 'on') ? {'right': '0px'} : {'right': '-45px'}, 'onMouseEnter': this.mouseEnter, 'onMouseLeave': this.mouseLeave},
                             rce('b',{'data-myname': 'on'}, 'On')
                         ),
-                        rce('div', {'className': 'toggle', 'onClick': this.toggle, 'data-myname': 'off'},
+                        rce('div', {'className': 'toggle', 'onClick': this.toggle, 'data-myname': 'off', 'style': (display === 'off') ? {'right': '0px'} : {'right': '-45px'}, 'onMouseEnter': this.mouseEnter, 'onMouseLeave': this.mouseLeave},
                             rce('b',{'data-myname': 'off'}, 'Off')
                         )
                     )
